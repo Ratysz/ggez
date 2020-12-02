@@ -37,12 +37,16 @@ jobs:
       if: ${{ runner.os == 'Linux' }}
       run: sudo apt-get update; sudo apt-get install --no-install-recommends libudev-dev
 
-    - name: Run cargo check --all-targets -- -D warnings
+    - name: Run cargo check --all-targets w/ -D warnings
       run: cargo check --all-targets
+      env:
+        RUSTFLAGS: "-D warnings"
 
-    - name: Run cargo test -- -D warnings
+    - name: Run cargo test w/ -D warnings
       if: ${{ runner.os == 'Linux' }}
-      run: cargo test
+      run: cargo test headless
+      env:
+        RUSTFLAGS: "-D warnings"
 
   rustfmt:
     runs-on: ubuntu-20.04
