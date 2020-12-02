@@ -29,6 +29,14 @@ jobs:
         toolchain: ${{ matrix.toolchain }}
         override: true
 
+    - name: Install alsa
+      if: ${{ runner.os == 'Linux' }}
+      run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev
+
+    - name: Install udev
+      if: ${{ runner.os == 'Linux' }}
+      run: sudo apt-get update; sudo apt-get install --no-install-recommends libudev-dev
+
     - name: Run cargo check
       run: cargo check
 
@@ -68,6 +76,12 @@ jobs:
         toolchain: stable
         override: true
         components: clippy
+
+    - name: Install alsa
+      run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev
+
+    - name: Install udev
+      run: sudo apt-get update; sudo apt-get install --no-install-recommends libudev-dev
 
     - name: Run cargo clippy
       run: cargo clippy
