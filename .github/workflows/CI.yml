@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [devel]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+
+  build:
+    strategy:
+      matrix:
+        os: [windows-2019, ubuntu-20.04, macos-10.15]
+    runs-on: ${{ matrix.os }}
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Get Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        override: true
+
+    - name: Run cargo check
+      run: cargo check
+
+    - name: Run cargo test
+      if: ${{ runner.os == 'Linux' }}
+      run: cargo test
+
+  rustfmt:
+    runs-on: ubuntu-20.04
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Get nightly Rust toolchain with rustfmt
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: nightly
+        override: true
+        components: rustfmt
+
+    - name: Run cargo +nightly fmt --all -- --check
+      run: cargo +nightly fmt --all -- --check
+
+  clippy:
+    runs-on: ubuntu-20.04
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Get stable Rust toolchain with clippy
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+        components: clippy
+
+    - name: Run cargo clippy
+      run: cargo clippy
